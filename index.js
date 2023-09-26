@@ -4,6 +4,22 @@ const url = require("url");
 // const textIn = fs.readFileSync("./starter/txt/input.txt", "utf-8");
 // const textOut = `this is all we know about avacadio : ${textIn} on\n${Date.now()}.`;
 // fs.writeFileSync("./starter/txt/output.txt", textOut);
+const users = [
+  { username: "sms", password: "123" },
+  { username: "user2", password: "password2" },
+  { username: "sajjad", password: "sms" },
+  // Add more users as needed
+];
+function register(username, password) {
+  users.push({ username, password });
+}
+//
+function login(username, password) {
+  const user = users.find(
+    (u) => u.username === username && u.password === password
+  );
+  return user ? true : false;
+}
 
 const templogin = fs.readFileSync(`${__dirname}/templates/login.html`, "utf-8");
 
@@ -19,6 +35,7 @@ const tempProduct = fs.readFileSync(
   `${__dirname}/templates/template-product.html`,
   "utf-8"
 );
+
 const data = fs.readFileSync(`${__dirname}/dev-data/data.json`, "utf-8");
 const dataObj = JSON.parse(data);
 
@@ -54,12 +71,12 @@ const server = http.createServer((req, res) => {
     res.end(output);
 
     //product
-  } 
-else if
-  (pathname === "/overview") {
+  } else if (pathname === "/moverview") {
     res.writeHead(200, {
       "Content-type": "text/html",
     });
+
+    //
 
     const cardsHtml = dataObj
       .map((el) => replaceTemplate(tempCard, el))
@@ -68,9 +85,7 @@ else if
     res.end(output);
 
     //product
-  } 
-
-  else if (pathname === "/product") {
+  } else if (pathname === "/product") {
     res.writeHead(200, {
       "Content-type": "text/html",
     });
@@ -118,49 +133,67 @@ else if
       }
     );
   }
-  
+
   //http://127.0.0.1:3000/img/wave.png
 
-//http://127.0.0.1:3000/img/avatar.svg
+  //http://127.0.0.1:3000/img/avatar.svg
+  else if (req.url === "/img/wave.png") {
+    fs.readFile(`${__dirname}/templates/img/wave.png`, (err, data) => {
+      if (err) {
+        res.writeHead(404, { "Content-Type": "text/plain" });
+        res.end("404 Not Found");
+      } else {
+        res.writeHead(200, { "Content-Type": "image/png" });
+        res.end(data);
+      }
+    });
+  }
+  //http://127.0.0.1:3000/img/bg.svg
+  else if (req.url === "/img/bg.svg") {
+    fs.readFile(`${__dirname}/templates/img/bg.svg`, (err, data) => {
+      if (err) {
+        res.writeHead(404, { "Content-Type": "text/plain" });
+        res.end("404 Not Found");
+      } else {
+        res.writeHead(200, { "Content-Type": "image/svg+xml" });
+        res.end(data);
+      }
+    });
+  } else if (req.url === "/img/avatar.svg") {
+    fs.readFile(`${__dirname}/templates/img/avatar.svg`, (err, data) => {
+      if (err) {
+        res.writeHead(404, { "Content-Type": "text/plain" });
+        res.end("404 Not Found");
+      } else {
+        res.writeHead(200, { "Content-Type": "image/svg+xml" });
+        res.end(data);
+      }
+    });
+  } else if (req.method === "POST" && req.url === "/overview") {
+    let body = "";
+    req.on("data", (chunk) => {
+      body += chunk.toString();
+    });
+    req.on("end", () => {
+      const formData = new URLSearchParams(body);
+      const username = formData.get("name");
+      const password = formData.get("password");
+console.log(username+password)
+      if (login(username, password)) {
+        
 
-
-else if (req.url === '/img/wave.png') {
-  fs.readFile(`${__dirname}/templates/img/wave.png`, (err, data) => {
-    if (err) {
-      res.writeHead(404, { 'Content-Type': 'text/plain'  });
-      res.end('404 Not Found');
-    } else {
-      res.writeHead(200, { 'Content-Type': 'image/png' });
-      res.end(data);
-    }
-  });
-}
-//http://127.0.0.1:3000/img/bg.svg
-
-else if (req.url === '/img/bg.svg') {
-  fs.readFile(`${__dirname}/templates/img/bg.svg`, (err, data) => {
-    if (err) {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      res.end('404 Not Found');
-    } else {
-      res.writeHead(200, { 'Content-Type': 'image/svg+xml' });
-      res.end(data);
-    }
-  });
-}else if (req.url === '/img/avatar.svg') {
-  fs.readFile(`${__dirname}/templates/img/avatar.svg`, (err, data) => {
-    if (err) {
-      res.writeHead(404, { 'Content-Type': 'text/plain' });
-      res.end('404 Not Found');
-    } else {
-      res.writeHead(200, { 'Content-Type': 'image/svg+xml' });
-      res.end(data);
-    }
-  });
-}
-
+        const cardsHtml = dataObj
+        .map((el) => replaceTemplate(tempCard, el))
+        .join("");
+      const output = tempOverview.replace("{%PRODUCT-CARDS}", cardsHtml);
+      res.end(output);
+        
+      } else {
+        res.end("Invalid username or password");
+      }
+    });
+  }
   /// imge
-  
   else {
     res.writeHead(404, {
       "content-type": "text/html",
@@ -172,3 +205,12 @@ else if (req.url === '/img/bg.svg') {
 server.listen(3000, "127.0.0.1", () => {
   console.log("Locallhost:http://127.0.0.1:3000");
 });
+
+
+
+
+
+
+
+
+
