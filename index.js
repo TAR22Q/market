@@ -22,6 +22,7 @@ function login(username, password) {
 }
 
 const templogin = fs.readFileSync(`${__dirname}/templates/login.html`, "utf-8");
+const tempto_cart = fs.readFileSync(`${__dirname}/templates/cart-shop.html`, "utf-8");
 
 const tempOverview = fs.readFileSync(
   `${__dirname}/templates/template-overview.html`,
@@ -71,7 +72,37 @@ const server = http.createServer((req, res) => {
     res.end(output);
 
     //product
-  } else if (pathname === "/moverview") {
+  }
+  else if (pathname === "/overview") {
+    res.writeHead(200, {
+      "Content-type": "text/html",
+    });
+
+    const cardsHtml = dataObj
+      .map((el) => replaceTemplate(tempCard, el))
+      .join("");
+    const output = tempOverview.replace("{%PRODUCT-CARDS}", cardsHtml);
+    res.end(output);
+
+    //product
+  }
+
+  else if (pathname === "/tocart") {
+    res.writeHead(200, {
+      "Content-type": "text/html",
+    });
+
+    const cardsHtml = dataObj
+      .map((el) => replaceTemplate(tempCard, el))
+      .join("");
+    const output = tempto_cart.replace("{%PRODUCT-CARDS}", cardsHtml);
+    res.end(output);
+
+    //product
+  }
+  
+  
+  else if (pathname === "/moverview") {
     res.writeHead(200, {
       "Content-type": "text/html",
     });
@@ -118,7 +149,20 @@ const server = http.createServer((req, res) => {
         res.end(data);
       }
     });
-  } else if (req.url === "/login2.css") {
+  } 
+  else if (req.url === "/to-cart.js") {
+    fs.readFile(`${__dirname}/templates/js/to-cart.js`, "utf-8", (err, data) => {
+      if (err) {
+        res.writeHead(404, { "Content-Type": "text/js" });
+        res.end("404 Not Found");
+      } else {
+        res.writeHead(200, { "Content-Type": "text/js" });
+        res.end(data);
+      }
+    });
+  }
+  
+  else if (req.url === "/login2.css") {
     fs.readFile(
       `${__dirname}/templates/css/style.css`,
       "utf-8",
@@ -205,12 +249,3 @@ console.log(username+password)
 server.listen(3000, "127.0.0.1", () => {
   console.log("Locallhost:http://127.0.0.1:3000");
 });
-
-
-
-
-
-
-
-
-

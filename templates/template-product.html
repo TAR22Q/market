@@ -15,6 +15,12 @@
 
     <title>{%PRODUCTNAME} {%IMAGE} /// NODE FARM</title>
 
+
+
+
+
+
+
     <style>
       *,
       *::before,
@@ -293,13 +299,34 @@
           <p><span class="emoji-left">🏷</span> {%PRICE}$</p>
         </div>
 
-        <a href="#" class="product__link">
+        <a href="#" class="product__link" onclick="addItemToCart('{%PRODUCTNAME}', '{%PRICE}','{%IMAGE}')" >
           <span class="emoji-left">🛒</span>
-          <span>Add to shopping card ({%PRICE}$)</span>
+          <span >Add to shopping card ({%PRICE}$) </span>
         </a>
 
         <p class="product__description">{%DESCRIPTION}</p>
       </figure>
     </div>
+    <div class="cart" id="cart">
+      <!-- Cart items will be added here with JavaScript -->
+      
+  </div>
+<div class="cart"></div>
+<script>function addItemToCart(productName, price,img) {
+  const cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+
+  const newItem = {
+      productName: productName,
+      price: price,
+      img:img
+  };
+
+  cartItems.push(newItem);
+  localStorage.setItem('cart', JSON.stringify(cartItems));
+
+  alert(`${productName} added to cart!`);
+}
+</script>
+
   </body>
 </html>
