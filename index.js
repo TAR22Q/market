@@ -32,8 +32,13 @@ const tempCard = fs.readFileSync(
   `${__dirname}/templates/template-card.html`,
   "utf-8"
 );
+
 const tempProduct = fs.readFileSync(
   `${__dirname}/templates/template-product.html`,
+  "utf-8"
+);
+const tempRegister = fs.readFileSync(
+  `${__dirname}/templates/Register.html`,
   "utf-8"
 );
 
@@ -101,8 +106,7 @@ const server = http.createServer((req, res) => {
     //product
   }
   
-  
-  else if (pathname === "/moverview") {
+  else if (pathname === "/register") {
     res.writeHead(200, {
       "Content-type": "text/html",
     });
@@ -112,7 +116,7 @@ const server = http.createServer((req, res) => {
     const cardsHtml = dataObj
       .map((el) => replaceTemplate(tempCard, el))
       .join("");
-    const output = tempOverview.replace("{%PRODUCT-CARDS}", cardsHtml);
+    const output = tempRegister.replace("{%PRODUCT-CARDS}", cardsHtml);
     res.end(output);
 
     //product
@@ -213,8 +217,8 @@ const server = http.createServer((req, res) => {
         res.end(data);
       }
     });
-  } else if (req.method === "POST" && req.url === "/overview") {
-    let body = "";
+  } else if (req.method === "POST" && req.url === "/overview2") {
+     let body = ""; 
     req.on("data", (chunk) => {
       body += chunk.toString();
     });
@@ -222,7 +226,9 @@ const server = http.createServer((req, res) => {
       const formData = new URLSearchParams(body);
       const username = formData.get("name");
       const password = formData.get("password");
-console.log(username+password)
+ if(username+password!==0){
+   
+ console.log(username+password)
       if (login(username, password)) {
         
 
@@ -232,9 +238,28 @@ console.log(username+password)
       const output = tempOverview.replace("{%PRODUCT-CARDS}", cardsHtml);
       res.end(output);
         
-      } else {
+      } 
+      
+      else {
         res.end("Invalid username or password");
-      }
+      } 
+
+   }
+   else{
+   const newusername = formData.get("newName");
+   const newpassword = formData.get("newPassword");
+   const password2 = formData.get("confirmPassword");
+   console.log(newusername+newpassword+password2)
+
+  if(newpassword!==password2) res.end("confirm password rong")
+  else{    register(newusername,newpassword)
+    const cardsHtml2 = dataObj
+    .map((el2) => replaceTemplate(tempCard, el2))
+    .join("");
+  const output2 = templogin.replace("{%PRODUCT-CARDS}", cardsHtml2);
+  res.end(output2);
+  }
+}
     });
   }
   /// imge
